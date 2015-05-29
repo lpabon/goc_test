@@ -7,6 +7,7 @@ import "C"
 
 import (
 	"fmt"
+	"github.com/lpabon/godbc"
 	"sync"
 	"time"
 )
@@ -17,8 +18,9 @@ func channel_send_test(c_chan *C.channel_t, wg *sync.WaitGroup) {
 	var pkt C.msg_t
 
 	for i := 0; i < 50; i++ {
+		pkt.val = C.int(i)
+		fmt.Printf("PING >> %v\n", pkt.val)
 		C.ch_send(c_chan, &pkt)
-		fmt.Println("PING >>")
 		time.Sleep(time.Millisecond * time.Duration(i*2))
 	}
 }
@@ -28,8 +30,9 @@ func channel_recv_test(c_chan *C.channel_t, wg *sync.WaitGroup) {
 
 	for i := 0; i < 50; i++ {
 
-		C.ch_recv(c_chan)
-		fmt.Println("<< PONG")
+		pkt := C.ch_recv(c_chan)
+		godbc.Check(C.int(i) == pkt.val, i, int(pkt.val))
+		fmt.Printf("%v << PONG\n", pkt.val)
 		time.Sleep(time.Millisecond * time.Duration(i*5))
 	}
 }

@@ -2,9 +2,7 @@
 #define _CHANNEL_H
 
 typedef struct {
-    int socket;
-    char buf[4096];
-    int len;
+    int val;
 } msg_t;
 
 typedef struct {
